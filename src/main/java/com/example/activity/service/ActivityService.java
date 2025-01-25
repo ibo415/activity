@@ -2,6 +2,8 @@ package com.example.activity.service;
 
 import com.example.activity.entity.Activity;
 import com.example.activity.entity.Participant;
+import com.example.activity.exception.DuplicateParticipantException;
+import com.example.activity.exception.ResourceNotFoundException;
 import com.example.activity.repository.ActivityRepository;
 import com.example.activity.repository.ParticipantRepository;
 import org.springframework.stereotype.Service;
@@ -29,22 +31,26 @@ public class ActivityService {
 
     public Activity findById(Long id) {
         return activityRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Activity not found with the id " + id)
-        );
+                () -> new ResourceNotFoundException("activity not found with id: " + id));
+
     }
 
     public Participant addParticipant(Long activityId, String name) {
-        Activity activity = findById(activityId);
+        Activity activity = findById(activityId); // aktivitaet suchen
 
+        // pruefe, ob der Teilnehmer bereits in der aktivitaet ist
         Optional<Participant> optionalParticipant = participantRepository.findAll()
                 .stream()
                 .filter(p -> p.getName().equals(name))
                 .findFirst();
 
-        Participant participant;
+        if(optionalParticipant.isPresent()){
+            throw new DuplicateParticipantException("participant with name:" + name + "is already in the activity");
+        }
 
-        if (optionalParticipant.isPresent()) {
-            participant = optionalParticipant.get();
+        Participant participant;
+        if (participantRepository.findByName(name).isPresent()) {
+            participant = participantRepository.findByName(name).get();
         } else {
             participant = new Participant();
             participant.setName(name);
