@@ -2,7 +2,6 @@ package com.example.activity.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,6 +27,8 @@ public class Activity {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
     private String location;
+
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate createdAt = LocalDate.now();
 
     @ManyToMany(mappedBy = "activities")
