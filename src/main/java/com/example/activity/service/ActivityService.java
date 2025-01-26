@@ -58,7 +58,6 @@ public class ActivityService {
 
 
         activity.addParticipant(participant);
-        participant.addActivity(activity);
 
         participantRepository.save(participant); // speichert sowohl die Teilnehmer als auch die Beziehungen
         return participant;
