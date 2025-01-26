@@ -33,4 +33,16 @@ public class Activity {
     @ManyToMany(mappedBy = "activities")
     private Set<Participant> participants = new HashSet<>();
 
+
+
+    public void addParticipant(Participant participant) {
+        participants.add(participant);
+        participant.getActivities().add(this);
+    }
+
+
+    public void removeParticipant(Participant participant) {
+        participants.remove(participant);
+        participant.getActivities().remove(this);
+    }
 }
