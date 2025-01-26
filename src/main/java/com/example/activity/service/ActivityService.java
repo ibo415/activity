@@ -36,32 +36,31 @@ public class ActivityService {
     }
 
     public Participant addParticipant(Long activityId, String name) {
+
+        if(activityId == null || name == null || name.isBlank()){
+            throw new IllegalArgumentException("activity ID and participant name must not be null or blank");
+        }
+
+
         Activity activity = findById(activityId); // aktivitaet suchen
 
         // pruefe, ob der Teilnehmer bereits in der aktivitaet ist
-        Optional<Participant> optionalParticipant = participantRepository.findAll()
-                .stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst();
+        Optional<Participant> optionalParticipant = participantRepository.findByName(name);
+        Participant participant = optionalParticipant.orElseGet(() -> {
+            Participant newParticipant = new Participant();
+            newParticipant.setName(name);
+            return newParticipant;
+        });
 
         if(optionalParticipant.isPresent()){
             throw new DuplicateParticipantException("participant with name:" + name + "is already in the activity");
         }
 
-        Participant participant;
-        if (participantRepository.findByName(name).isPresent()) {
-            participant = participantRepository.findByName(name).get();
-        } else {
-            participant = new Participant();
-            participant.setName(name);
-        }
 
-        participant.getActivities().add(activity);
-        activity.getParticipants().add(participant);
+        activity.addParticipant(participant);
+        participant.addActivity(activity);
 
-        participantRepository.save(participant);
-        activityRepository.save(activity);
-
+        participantRepository.save(participant); // speichert sowohl die Teilnehmer als auch die Beziehungen
         return participant;
 
     }
