@@ -1,9 +1,7 @@
 package com.example.activity.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,5 +28,15 @@ public class Participant {
     )
     @JsonIgnore
     private Set<Activity> activities = new HashSet<>();
+
+    public void addActivity(Activity activity) {
+        activities.add(activity);
+        activity.getParticipants().add(this);
+    }
+
+    public void removeActivity(Activity activity) {
+        activities.remove(activity);
+        activity.getParticipants().remove(this);
+    }
 
 }
