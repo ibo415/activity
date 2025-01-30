@@ -37,17 +37,17 @@ public class ActivityService {
 
     public Participant addParticipant(Long activityId, String name) {
 
-        if(activityId == null || name == null || name.isBlank()){
+        if (activityId == null || name == null || name.isBlank()) {
             throw new IllegalArgumentException("activity ID and participant name must not be null or blank");
         }
 
 
         Activity activity = findById(activityId); // aktivitaet suchen
-        /*TODO*/
+
         // Prüfen, ob der Benutzer bereits als Teilnehmer in der Aktivität ist
-      /*  if (activity.getParticipants().stream().anyMatch(p -> p.getName().equalsIgnoreCase(name))) {
-            throw new DuplicateParticipantException("Participant with username: " + name + " is already in the activity");
-        }*/
+        if (participantRepository.findByNameAndActivity(name, activityId).isPresent()) {
+            throw new DuplicateParticipantException("User " + name + " is already registered in activity " + activity.getTitle());
+        }
 
         // Teilnehmer aus der Datenbank abrufen oder erstellen
         Optional<Participant> optionalParticipant = participantRepository.findByName(name);
@@ -56,10 +56,6 @@ public class ActivityService {
             newParticipant.setName(name);
             return newParticipant;
         });
-
-       /* if(optionalParticipant.isPresent()){
-            throw new DuplicateParticipantException("participant with name:" + name + "is already in the activity");
-        }*/
 
 
         activity.addParticipant(participant);
