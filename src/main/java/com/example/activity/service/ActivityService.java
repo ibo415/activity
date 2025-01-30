@@ -43,8 +43,13 @@ public class ActivityService {
 
 
         Activity activity = findById(activityId); // aktivitaet suchen
+        /*TODO*/
+        // Prüfen, ob der Benutzer bereits als Teilnehmer in der Aktivität ist
+      /*  if (activity.getParticipants().stream().anyMatch(p -> p.getName().equalsIgnoreCase(name))) {
+            throw new DuplicateParticipantException("Participant with username: " + name + " is already in the activity");
+        }*/
 
-        // pruefe, ob der Teilnehmer bereits in der aktivitaet ist
+        // Teilnehmer aus der Datenbank abrufen oder erstellen
         Optional<Participant> optionalParticipant = participantRepository.findByName(name);
         Participant participant = optionalParticipant.orElseGet(() -> {
             Participant newParticipant = new Participant();
@@ -52,9 +57,9 @@ public class ActivityService {
             return newParticipant;
         });
 
-        if(optionalParticipant.isPresent()){
+       /* if(optionalParticipant.isPresent()){
             throw new DuplicateParticipantException("participant with name:" + name + "is already in the activity");
-        }
+        }*/
 
 
         activity.addParticipant(participant);
